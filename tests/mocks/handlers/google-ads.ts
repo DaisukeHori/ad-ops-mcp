@@ -37,8 +37,8 @@ export const googleAdsHandlers = [
       );
     }
 
-    // 正常レスポンス（空の結果）
-    return HttpResponse.json([{ results: [] }]);
+    // 正常レスポンス（サンプルデータ付き）
+    return HttpResponse.json([{ results: [{ campaign: { id: "123456", name: "テストキャンペーン", status: "ENABLED", advertisingChannelType: "SEARCH" }, adGroup: { id: "789012", name: "テスト広告グループ", status: "ENABLED" }, adGroupAd: { ad: { id: "345678", type: "RESPONSIVE_SEARCH_AD" }, status: "ENABLED", policySummary: { approvalStatus: "APPROVED", reviewStatus: "REVIEWED" } }, adGroupCriterion: { criterionId: "567890", keyword: { text: "テストキーワード", matchType: "BROAD" }, status: "ENABLED" }, campaignBudget: { id: "111222", name: "テスト予算", amountMicros: "1000000000", status: "ENABLED" }, metrics: { impressions: "1000", clicks: "50", costMicros: "500000000", conversions: "5", ctr: "0.05", averageCpc: "10000000" }, segments: { date: "2026-03-28" } }] }]);
   }),
 
   // mutate（汎用）

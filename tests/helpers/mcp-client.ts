@@ -34,17 +34,32 @@ export async function callTool(
 
   // サーバーの内部ツールハンドラーを取得して実行
   // McpServer の tool() で登録されたハンドラーを直接呼び出す
-  const toolHandler = (server as unknown as {
-    _registeredTools: Map<string, {
-      callback: (args: Record<string, unknown>) => Promise<ToolResult>;
+  const registeredTools = (server as unknown as {
+    _registeredTools: Record<string, {
+      inputSchema: { parse: (args: unknown) => unknown };
+      handler: (args: Record<string, unknown>) => Promise<ToolResult>;
     }>;
-  })._registeredTools?.get(toolName);
+  })._registeredTools;
 
-  if (!toolHandler) {
+  const toolEntry = registeredTools?.[toolName];
+
+  if (!toolEntry) {
     throw new Error(`ツール "${toolName}" が見つかりません。`);
   }
 
-  return toolHandler.callback(args);
+  // zod スキーマでバリデーション（MCP サーバーと同じ挙動を再現）
+  if (toolEntry.inputSchema && typeof toolEntry.inputSchema.parse === "function") {
+    try {
+      toolEntry.inputSchema.parse(args);
+    } catch (validationError) {
+      return {
+        content: [{ type: "text" as const, text: String(validationError) }],
+        isError: true,
+      };
+    }
+  }
+
+  return toolEntry.handler(args);
 }
 
 /**

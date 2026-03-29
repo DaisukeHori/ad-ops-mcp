@@ -46,6 +46,14 @@ export const xAdsHandlers = [
       );
     }
 
+    // レート制限
+    if (authHeader.includes("rate-limited")) {
+      return HttpResponse.json(
+        { errors: [{ code: "RATE_LIMIT", message: "Rate limit exceeded." }] },
+        { status: 429 }
+      );
+    }
+
     return HttpResponse.json({
       data: { id: "mock-id-123" },
       request: { params: {} },
@@ -60,6 +68,14 @@ export const xAdsHandlers = [
       return HttpResponse.json(
         { errors: [{ code: "UNAUTHORIZED", message: "Invalid or expired token." }] },
         { status: 401 }
+      );
+    }
+
+    // レート制限
+    if (authHeader.includes("rate-limited")) {
+      return HttpResponse.json(
+        { errors: [{ code: "RATE_LIMIT", message: "Rate limit exceeded." }] },
+        { status: 429 }
       );
     }
 
