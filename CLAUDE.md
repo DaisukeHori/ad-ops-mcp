@@ -125,9 +125,22 @@ ad-ops-mcp/
 3. `lib/mcp/tools/x-ads/` — 全12ツール
 4. `lib/mcp/server.ts` に追加登録
 
-### Step 6: 仕上げ
+### Step 6: テスト実装
+1. `vitest` + `msw` のセットアップ (`vitest.config.ts`, `tests/setup.ts`)
+2. `tests/mocks/handlers/` — 全プラットフォームのモックハンドラー作成
+3. `tests/mocks/fixtures/` — APIレスポンスフィクスチャ作成
+4. `tests/helpers/mcp-client.ts` — `callTool()`, `chainTools()` ヘルパー
+5. `tests/unit/platforms/` — 認証・クライアント・GAQLの単体テスト（49件）
+6. `tests/unit/tools/google-ads/` — Google Ads ツール単体テスト（80件）
+7. `tests/unit/tools/meta-ads/` — Meta Ads ツール単体テスト（80件）
+8. `tests/unit/tools/gbp/` — GBP ツール単体テスト（40件）
+9. `tests/unit/tools/x-ads/` — X Ads ツール単体テスト（48件）+ 予備24件
+10. `tests/integration/it2/` — 2ツール結合テスト（200件）
+11. `tests/integration/it3/` — 3ツール以上結合テスト（400件）
+
+### Step 7: 仕上げ
 1. `skill/SKILL.md` — 広告運用スキル定義
-2. `tests/e2e-test.sh`
+2. `.github/workflows/test.yml` — CI/CD パイプライン
 3. `.env.example`
 4. `README.md` 更新
 
@@ -173,7 +186,79 @@ X_ADS_ACCOUNT_ID=
 
 ## テスト
 
-`npm run dev` でローカル起動後、`tests/e2e-test.sh` で各ツールを MCP JSON-RPC で叩く。環境変数が未設定のプラットフォームはスキップする設計にすること。
+### テスト方針（必読）
+
+**テスト計画書 `docs/test-plan.md` を必ず読んでから実装すること。**
+
+テストは **Vitest + msw (Mock Service Worker)** で実装する。実際の外部APIは一切叩かない。
+
+| レベル | 件数 | 内容 |
+|---|---|---|
+| UT（単体テスト） | 321件 | 全62ツール × 4パターン + インフラ49件 |
+| IT2（2ツール結合） | 200件 | 1つ目の出力を2つ目の入力に渡す連携テスト |
+| IT3（3ツール以上結合） | 400件 | 実運用フローの再現テスト |
+| **合計** | **921件** | |
+
+### テストディレクトリ構造
+
+```
+tests/
+├── setup.ts                    # Vitest グローバルセットアップ
+├── mocks/
+│   ├── handlers/               # msw ハンドラー（プラットフォーム別）
+│   └── fixtures/               # APIレスポンスフィクスチャ
+├── unit/
+│   ├── platforms/              # auth, client, gaql の単体テスト
+│   └── tools/                  # 各ツールの単体テスト（4パターン/ツール）
+├── integration/
+│   ├── it2/                    # 2ツール結合テスト（200件）
+│   └── it3/                    # 3ツール以上結合テスト（400件）
+└── helpers/
+    └── mcp-client.ts           # callTool(), chainTools() ヘルパー
+```
+
+### 単体テストの4パターン（全ツール共通）
+
+各ツールは以下4パターンをテストすること:
+- **A. 正常系**: 正常パラメータ → 成功レスポンス
+- **B. 認証エラー**: API 401 → PlatformError + isError: true
+- **C. レート制限**: API 429 → PlatformError + isError: true
+- **D. パラメータ不正**: zod バリデーションエラー（必須パラメータ未指定）
+
+### 結合テストのヘルパー
+
+`chainTools()` を使って複数ツールを連鎖実行する:
+
+```typescript
+const results = await chainTools([
+  { tool: "google_ads_budget_create", args: { name: "テスト予算", amountMicros: 1000000000 } },
+  { tool: "google_ads_campaign_create", args: (prev) => ({
+    name: "テストキャンペーン",
+    budgetResourceName: extractResourceName(prev),
+    advertisingChannelType: "SEARCH",
+  })},
+  { tool: "google_ads_adgroup_create", args: (prev) => ({
+    campaignId: extractId(prev),
+    name: "テスト広告グループ",
+  })},
+]);
+```
+
+### テスト実行
+
+```bash
+npm test                              # 全921件
+npm test -- --dir tests/unit          # 単体のみ
+npm test -- --dir tests/integration   # 結合のみ
+npm test -- --coverage                # カバレッジ付き
+```
+
+### 合格基準
+
+- 全921テスト合格率: **100%**
+- コードカバレッジ (Line): **90%以上**
+- コードカバレッジ (Branch): **85%以上**
+- 全テスト実行時間: **120秒以内**
 
 ## デプロイ
 

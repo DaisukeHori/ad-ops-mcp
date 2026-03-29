@@ -686,33 +686,31 @@ X_ADS_ACCOUNT_ID=             # 広告アカウントID
 
 ---
 
-## 10. テスト戦略
+## 10. テスト設計
 
-### 10.1 E2E テスト
+テスト計画の全体像は `docs/test-plan.md` を参照。ここではアーキテクチャに関連するテスト設計のみ記載する。
 
-hubspot-ma-mcp の `tests/e2e-test.sh` と同様のパターンで、各プラットフォームのAPIを直接叩いてテストする。
+### 10.1 テストフレームワーク
 
-```bash
-# tests/e2e-test.sh
+| ライブラリ | 用途 |
+|---|---|
+| Vitest | テストランナー・アサーション |
+| msw (Mock Service Worker) | HTTP レベルのAPIモック |
 
-MCP_URL="http://localhost:3000/api/mcp"
+### 10.2 テスト規模
 
-# Google Ads: アカウント一覧取得
-curl -s -X POST "$MCP_URL" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"google_ads_account_list","arguments":{}},"id":1}'
+- 単体テスト (UT): **321件** — 全ツール4パターン + インフラ49件
+- 2ツール結合 (IT2): **200件** — ツール間データ連携
+- 3ツール以上結合 (IT3): **400件** — 実運用フロー再現
+- **合計: 921件**
 
-# Meta Ads: キャンペーン一覧取得
-curl -s -X POST "$MCP_URL" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"meta_ads_campaign_list","arguments":{}},"id":2}'
-```
+### 10.3 モック設計
 
-### 10.2 単体テスト方針
+msw を使い、各プラットフォームの REST API エンドポイントをインターセプトする。OAuth2 トークンエンドポイント（`https://oauth2.googleapis.com/token`）もモック対象。
 
-- 各プラットフォームクライアントのモック化
-- エラーハンドリングの網羅テスト
-- OAuth トークンリフレッシュのテスト
+### 10.4 結合テスト用ヘルパー
+
+`chainTools()` 関数で複数ツールを順序実行し、前のツールの出力から ID やリソース名を抽出して次のツールの入力に渡す。これにより実運用と同じデータフローをテストする。
 
 ---
 

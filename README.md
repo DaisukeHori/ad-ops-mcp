@@ -77,10 +77,28 @@ https://ad-ops-mcp.vercel.app/api/mcp?key={MCP_API_KEY}
 
 詳細は [docs/requirements.md](docs/requirements.md) のセクション4を参照。
 
+## テスト
+
+921件の自動テスト（Vitest + msw）で品質を担保。外部APIは一切叩かない。
+
+```bash
+npm test                    # 全921件実行
+npm test -- --coverage      # カバレッジ付き
+```
+
+| レベル | 件数 |
+|---|---|
+| 単体テスト | 321件 |
+| 2ツール結合テスト | 200件 |
+| 3ツール以上結合テスト | 400件 |
+
+詳細は [テスト計画書](docs/test-plan.md) 参照。
+
 ## ドキュメント
 
 - [企画要件定義書](docs/requirements.md)
 - [基本設計・詳細設計書](docs/design.md)
+- [テスト計画書](docs/test-plan.md)
 - [Claude Code 開発ガイド](CLAUDE.md)
 
 ## ライセンス
