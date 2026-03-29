@@ -1,0 +1,32 @@
+{
+  "name": "ad-ops-mcp",
+  "version": "1.0.0",
+  "description": "Google Ads / Meta Ads / GBP / X Ads 統合広告運用 MCP サーバー",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "mcp-handler": "^1.0.7",
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^3",
+    "msw": "^2",
+    "typescript": "^5",
+    "vitest": "^3"
+  }
+}
