@@ -673,7 +673,7 @@ export const googleAdsHandlers = [
 
   // searchStream
   http.post(
-    "https://googleads.googleapis.com/v18/customers/:customerId/googleAds:searchStream",
+    "https://googleads.googleapis.com/v23/customers/:customerId/googleAds:searchStream",
     async ({ request }) => {
       const body = await request.json();
       // GAQLクエリに応じてフィクスチャを返す
@@ -683,7 +683,7 @@ export const googleAdsHandlers = [
 
   // mutate
   http.post(
-    "https://googleads.googleapis.com/v18/customers/:customerId/:service",
+    "https://googleads.googleapis.com/v23/customers/:customerId/:service",
     () => {
       return HttpResponse.json({ results: [{ resourceName: "customers/123/campaigns/456" }] });
     }

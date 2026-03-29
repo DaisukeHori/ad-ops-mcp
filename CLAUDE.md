@@ -43,7 +43,7 @@ Google Ads / Meta Ads (Facebook+Instagram) / Google Business Profile / X (Twitte
 
 ### 5. Google Ads は REST API を使う
 
-Google Ads API は gRPC と REST の両方をサポートしているが、Vercel Function (Node.js) 環境では **REST API** を使う。エンドポイントは `https://googleads.googleapis.com/v18/` 。データ取得は GAQL (Google Ads Query Language) を `searchStream` に POST する。
+Google Ads API は gRPC と REST の両方をサポートしているが、Vercel Function (Node.js) 環境では **REST API** を使う。エンドポイントは `https://googleads.googleapis.com/v23/` 。データ取得は GAQL (Google Ads Query Language) を `searchStream` に POST する。（※ v18 は 2025年8月にサンセット済み。v23 が 2026年1月リリースの最新安定版）
 
 ### 6. 金額はマイクロ単位
 
@@ -268,10 +268,23 @@ git push origin main  # Vercel が自動デプロイ
 
 Vercel の Function timeout は 60秒に設定（`vercel.json`）。
 
+## 設計書の同期ルール
+
+**CLAUDE.md に仕様変更があった場合、必ず以下の設計書・定義書にも同じ変更を反映すること。**
+
+| ファイル | 内容 |
+|---|---|
+| `docs/requirements.md` | 企画要件定義書 |
+| `docs/design.md` | 基本設計・詳細設計書 |
+| `docs/test-plan.md` | テスト計画書 |
+| `README.md` | プロジェクト概要 |
+
+APIバージョン・エンドポイントURL・パラメータ仕様・ツール名などの変更は、全ドキュメントを横断的に更新すること。1箇所だけ変更して他を放置しないこと。
+
 ## 注意事項
 
 - Google Ads API の金額は全てマイクロ単位。1円 = 1,000,000 micros
-- Meta API のバージョンは `v21.0` を使用（最新安定版を確認して更新すること）
+- Meta API のバージョンは `v25.0` を使用（2026年2月リリースの最新安定版。v21.0 は非推奨）
 - X Ads API のバージョンは `12` を使用
 - GBP API は Business Profile API v1 と My Business API v4 が混在する。エンドポイントに注意
 - OAuth2 の Access Token キャッシュは module-level 変数で行う（Vercel Function は cold start があるため、永続キャッシュは不要）

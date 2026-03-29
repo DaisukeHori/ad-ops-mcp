@@ -233,7 +233,7 @@
 
 1. Google Ads API は REST API を使用する（gRPC ではなく HTTP/JSON）
    - REST は v14 以降で正式サポート。Vercel Function 環境で gRPC は困難なため
-2. Meta Marketing API のバージョンは最新安定版（v21.0 等）を使用
+2. Meta Marketing API のバージョンは最新安定版（v25.0）を使用
 3. X Ads API の Ads API アクセスが承認されていること
 4. Google Ads の Developer Token が Basic Access 以上であること
 5. 全プラットフォームのAPIキー・トークンが環境変数で提供されていること

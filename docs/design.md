@@ -50,7 +50,50 @@
 
 ---
 
-## 2. 技術スタック
+## 2. API バージョン（2026年3月時点）
+
+### 2.1 各プラットフォームの API バージョン
+
+| プラットフォーム | 使用バージョン | ベースURL | 備考 |
+|---|---|---|---|
+| Google Ads API | **v23** | `https://googleads.googleapis.com/v23/` | v18は2025年8月サンセット済み。v23は2026年1月リリース |
+| Meta Marketing API | **v25.0** | `https://graph.facebook.com/v25.0/` | v21.0は非推奨。v25.0は2026年2月リリース |
+| GBP API (Business Info) | **v1** | `https://mybusinessbusinessinformation.googleapis.com/v1/` | 現行 |
+| GBP API (Reviews/Posts) | **v4** | `https://mybusiness.googleapis.com/v4/` | レガシーだが引き続き利用可能 |
+| GBP API (Performance) | **v1** | `https://businessprofileperformance.googleapis.com/v1/` | 現行 |
+| X Ads API | **v12** | `https://ads-api.x.com/12/` | 2022年10月リリース。最新版 |
+
+### 2.2 Google Ads API v23 の主な変更点（v18 からの差分）
+
+- **Performance Max チャネル別レポート**: Search, YouTube, Display, Gmail, Discover, Maps ごとのパフォーマンスデータ取得可能
+- **Performance Max キャンペーンレベルのネガティブキーワード**: campaign_criterion で除外キーワード設定可能
+- **テキストガイドライン**: Performance Max / Search キャンペーンで AI 生成テキストの制御（用語除外、メッセージ制限）
+- **広告スケジュール改善**: start_date / end_date フィールドが日時（DateTime）に拡張
+- **細分化請求書**: InvoiceService でキャンペーンレベルのコスト取得
+- **CallAd / CallAdInfo サポート削除**: 電話広告は別の方法で実装が必要
+- **広告グループ間の広告共有不可**: 各広告は単一の広告グループに紐付く
+- **VideoEnhancement リソース追加**: 動画広告の強化設定
+
+### 2.3 Meta Marketing API v25.0 の主な変更点（v21 からの差分）
+
+- **Page Viewer Metric**: レガシーの reach 指標に代わる統合メトリクス（Facebook + Instagram 横断）
+- **Reach/Impressions メトリクス非推奨**: 2026年6月に非推奨予定。新しいメトリクスへの移行が必要
+- **Advantage+ キャンペーン変更**: ASC (Advantage+ Shopping Campaigns) と AAC の作成/更新が Marketing API から無効化。統合キャンペーン作成フローに移行
+- **Ads Insights Async API エラー強化**: 詳細なエラーフィールド追加
+- **Customer File Custom Audience 強制変更**: カスタムオーディエンスの利用条件変更
+- **metadata=1 クエリパラメータ非推奨**: 別の方法でメタデータ取得が必要
+
+### 2.4 GBP API の注意点
+
+- Business Calls API、InsuranceNetworks、HealthProviderAttributes は非推奨
+- `locations.fetchMultiDailyMetricsTimeSeries` への移行が推奨（旧パフォーマンス API メソッドから）
+- GBP API へのアクセスには明示的な承認と有効なビジネス理由が必要
+
+---
+
+## 3. 技術スタック
+
+> ※ セクション番号は旧版からずれています。以降の参照時はセクション名で参照してください。
 
 | レイヤー | 技術 | 理由 |
 |---|---|---|
@@ -304,7 +347,7 @@ export function generateOAuthHeader(
 ```typescript
 // lib/platforms/google-ads/client.ts
 
-const GOOGLE_ADS_API_VERSION = "v18";
+const GOOGLE_ADS_API_VERSION = "v23";
 const BASE_URL = `https://googleads.googleapis.com/${GOOGLE_ADS_API_VERSION}`;
 
 export async function searchGoogleAds(
@@ -396,7 +439,7 @@ export function buildCampaignListQuery(options?: {
 ```typescript
 // lib/platforms/meta-ads/client.ts
 
-const META_API_VERSION = "v21.0";
+const META_API_VERSION = "v25.0";
 const BASE_URL = `https://graph.facebook.com/${META_API_VERSION}`;
 
 export async function metaGet<T>(
