@@ -20,6 +20,16 @@ import { createMcpHandler } from "mcp-handler";
 import { registerAllTools } from "@/lib/mcp/server";
 import { getAuthMode } from "@/lib/config";
 
+// Vercel Function として明示的に Node.js ランタイムで動作させる
+// （エッジランタイムでは mcp-handler が想定通りに動作しないため）
+export const runtime = "nodejs";
+
+// レスポンスをキャッシュさせない（MCP は常に動的レスポンス）
+export const dynamic = "force-dynamic";
+
+// Next.js 15 推奨の関数タイムアウト指定（vercel.json とあわせて 60 秒）
+export const maxDuration = 60;
+
 const mcpHandler = createMcpHandler(
   (server) => {
     registerAllTools(server);
@@ -93,9 +103,50 @@ function verifyApiKey(apiKey: string | undefined): Response | null {
 }
 
 /**
+ * 軽量ヘルスチェックレスポンスを生成する
+ *
+ * mcp-doctor や UptimeRobot などの監視ツールが MCP プロトコルを話さずに
+ * サーバーの生存確認を行えるよう、GET /api/health と GET /api/mcp (非MCP時)
+ * に対して 200 OK を返す。
+ */
+function buildHealthResponse(): Response {
+  return new Response(
+    JSON.stringify({
+      status: "ok",
+      service: "ad-ops-mcp",
+      transports: ["streamable-http", "sse"],
+      endpoints: {
+        mcp: "/api/mcp",
+        sse: "/api/sse",
+      },
+      timestamp: new Date().toISOString(),
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
+    }
+  );
+}
+
+/**
  * メインハンドラー
  */
 async function handler(request: Request): Promise<Response> {
+  const url = new URL(request.url);
+
+  // ── ヘルスチェック ──
+  // /api/health は常時 200 を返す。
+  // GET /api/mcp も、MCP クライアント以外からの生存監視用途として 200 を返す。
+  if (url.pathname.endsWith("/api/health")) {
+    return buildHealthResponse();
+  }
+  if (request.method === "GET" && url.pathname.endsWith("/api/mcp")) {
+    return buildHealthResponse();
+  }
+
   const mode = getAuthMode();
   const bearerToken = extractBearerToken(request);
 

@@ -12,6 +12,17 @@ import type {
   MutateResponse,
 } from "@/lib/platforms/google-ads/types";
 
+/**
+ * Google Ads API のベース URL
+ *
+ * バージョン方針（2026-04-15 時点）:
+ *  - 現行安定版は v23（v23.0 = 2026-01-28 / v23.1 = 2026-02-25 / v23.2 = 2026-03-25）
+ *  - 2026 年 1 月から月次リリースサイクルに移行。マイナーアップデート（v23.x）は
+ *    URL パスを変更せず、引き続き `/v23/` を使用する。
+ *  - v19 は 2026-02 にサンセット済み、v21 は 2026-08、v22 は 2026-10 にサンセット予定。
+ *    v23 は最低 2027 年初頭まで利用可能（リリースから 1 年間サポート方針）。
+ *  - 参考: https://developers.google.com/google-ads/api/docs/release-notes
+ */
 const BASE_URL = "https://googleads.googleapis.com/v23";
 
 /**

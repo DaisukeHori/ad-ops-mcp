@@ -43,7 +43,13 @@ Google Ads / Meta Ads (Facebook+Instagram) / Google Business Profile / X (Twitte
 
 ### 5. Google Ads は REST API を使う
 
-Google Ads API は gRPC と REST の両方をサポートしているが、Vercel Function (Node.js) 環境では **REST API** を使う。エンドポイントは `https://googleads.googleapis.com/v23/` 。データ取得は GAQL (Google Ads Query Language) を `searchStream` に POST する。（※ v18 は 2025年8月にサンセット済み。v23 が 2026年1月リリースの最新安定版）
+Google Ads API は gRPC と REST の両方をサポートしているが、Vercel Function (Node.js) 環境では **REST API** を使う。エンドポイントは `https://googleads.googleapis.com/v23/` 。データ取得は GAQL (Google Ads Query Language) を `searchStream` に POST する。
+
+**バージョン状況（2026-04-15 時点で検証済み）:**
+- 現行安定版: **v23**（マイナー更新は v23.2 まで進行。URL パスは major のみ `/v23/` を使用）
+- 2026年1月から月次リリースサイクルに移行
+- サンセット状況: v19 = 2026-02 完了 / v21 = 2026-08 予定 / v22 = 2026-10 予定
+- v23 は 2027 年初頭までサポート予定（リリースから 1 年間サポート方針）
 
 ### 6. 金額はマイクロ単位
 
