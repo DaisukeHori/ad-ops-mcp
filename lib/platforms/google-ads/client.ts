@@ -12,7 +12,23 @@ import type {
   MutateResponse,
 } from "@/lib/platforms/google-ads/types";
 
-const BASE_URL = "https://googleads.googleapis.com/v23";
+/**
+ * Google Ads API のメジャーバージョン
+ *
+ * 確認日: 2026-04-15（mcp-doctor によるチェンジログ変更検知対応）
+ *
+ * 現在の状況:
+ * - v23 (2026-01-28 リリース) が最新メジャーバージョン
+ * - 最新 minor リリースは v23.2 (2026-03-25)
+ * - minor リリースは URL を変更しない（/v23/ で v23.2 の機能も利用可能）
+ * - v23 で削除された CallAd / CallAdInfo および aggregate asset performance label
+ *   metrics は当プロジェクトでは未使用のため影響なし
+ * - v21 は今後サンセット予定だが、当プロジェクトは v23 を使用しているため非該当
+ *
+ * 参考: https://developers.google.com/google-ads/api/docs/release-notes
+ */
+const GOOGLE_ADS_API_VERSION = "v23";
+const BASE_URL = `https://googleads.googleapis.com/${GOOGLE_ADS_API_VERSION}`;
 
 /**
  * 共通ヘッダーを生成する
