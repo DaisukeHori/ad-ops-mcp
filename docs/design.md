@@ -56,7 +56,7 @@
 
 | プラットフォーム | 使用バージョン | ベースURL | 備考 |
 |---|---|---|---|
-| Google Ads API | **v23** | `https://googleads.googleapis.com/v23/` | v18は2025年8月サンセット済み。v23は2026年1月リリース |
+| Google Ads API | **v23** | `https://googleads.googleapis.com/v23/` | v18は2025年8月サンセット済み。v23は2026年1月リリース。最新 minor は v23.2 (2026-03-25)。minor リリースでは URL は変わらない |
 | Meta Marketing API | **v25.0** | `https://graph.facebook.com/v25.0/` | v21.0は非推奨。v25.0は2026年2月リリース |
 | GBP API (Business Info) | **v1** | `https://mybusinessbusinessinformation.googleapis.com/v1/` | 現行 |
 | GBP API (Reviews/Posts) | **v4** | `https://mybusiness.googleapis.com/v4/` | レガシーだが引き続き利用可能 |
@@ -70,9 +70,22 @@
 - **テキストガイドライン**: Performance Max / Search キャンペーンで AI 生成テキストの制御（用語除外、メッセージ制限）
 - **広告スケジュール改善**: start_date / end_date フィールドが日時（DateTime）に拡張
 - **細分化請求書**: InvoiceService でキャンペーンレベルのコスト取得
-- **CallAd / CallAdInfo サポート削除**: 電話広告は別の方法で実装が必要
+- **CallAd / CallAdInfo サポート削除**: 電話広告は別の方法で実装が必要（当プロジェクトでは未使用のため影響なし）
+- **aggregate asset performance label metrics 削除**: Search / Display の performance label enum が返却されなくなる（当プロジェクトでは未使用のため影響なし）
 - **広告グループ間の広告共有不可**: 各広告は単一の広告グループに紐付く
 - **VideoEnhancement リソース追加**: 動画広告の強化設定
+
+#### v23.2 (2026-03-25) までの minor リリース
+
+- **v23.1 (2026-02-25)** / **v23.2 (2026-03-25)** がリリース済み
+- minor リリースは URL パス（`/v23/`）を変更せず、後方互換性を保ったまま機能追加のみ行われる
+- 当プロジェクトの `lib/platforms/google-ads/client.ts` は `/v23/` を指しているため、自動的に最新 minor 機能が利用可能
+
+#### 2026-04-15 時点のサンセット状況
+
+- **v21** が今後サンセット予定（Google Ads API の通常サイクルに従う）
+- 当プロジェクトは **v23** を使用しているため直接的な影響はない
+- 確認元: https://developers.google.com/google-ads/api/docs/release-notes
 
 ### 2.3 Meta Marketing API v25.0 の主な変更点（v21 からの差分）
 
